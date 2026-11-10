@@ -2,7 +2,7 @@ import CoreLocation
 import Foundation
 import Observation
 
-/// Core Location 기반 집 위치 하드 게이트.
+/// 측정 중 위치 수신 (기록 전용, 판정에는 쓰지 않음).
 @Observable @MainActor
 final class LocationService: NSObject, CLLocationManagerDelegate {
     private(set) var authorization: CLAuthorizationStatus = .notDetermined
@@ -39,34 +39,6 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
     func requestOnce() {
         if authorization == .notDetermined { manager.requestWhenInUseAuthorization() }
         manager.requestLocation()
-    }
-
-    func gate(settings: AppSettings, rules: RuleConfig, now: Date = Date()) -> (status: GateStatus, reason: String) {
-        Self.evaluateGate(settings: settings, rules: rules, authorization: authorization, location: lastLocation, now: now)
-    }
-
-    static func evaluateGate(settings: AppSettings, rules: RuleConfig, authorization: CLAuthorizationStatus,
-                             location: CLLocation?, now: Date) -> (status: GateStatus, reason: String) {
-        guard settings.locationGateEnabled else { return (.disabled, "위치 제한 해제됨") }
-        guard let lat = settings.homeLatitude, let lon = settings.homeLongitude else {
-            return (.unknown, "집 위치 미설정")
-        }
-        switch authorization {
-        case .denied, .restricted: return (.unknown, "위치 권한 없음")
-        case .notDetermined: return (.unknown, "위치 권한 요청 전")
-        default: break
-        }
-        guard let loc = location else { return (.unknown, "위치 수신 대기 중") }
-        if loc.horizontalAccuracy < 0 || loc.horizontalAccuracy > rules.maxLocationAccuracy {
-            return (.unknown, "위치 정확도 부족 (±\(Int(loc.horizontalAccuracy))m)")
-        }
-        if now.timeIntervalSince(loc.timestamp) > rules.maxLocationAgeSeconds {
-            return (.unknown, "위치 정보가 오래됨")
-        }
-        let distance = loc.distance(from: CLLocation(latitude: lat, longitude: lon))
-        return distance <= settings.homeRadius
-            ? (.pass, "집 반경 내 (\(Int(distance))m)")
-            : (.blocked, "집 반경 밖 (\(Int(distance))m)")
     }
 
     // MARK: CLLocationManagerDelegate (메인 스레드에서 생성했으므로 메인에서 호출됨)

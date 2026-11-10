@@ -18,8 +18,8 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.jeongdaegyun.sleepdemo
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: 잠자리 감지
-        INFOPLIST_KEY_NSMotionUsageDescription: 기기 자세와 움직임으로 잠자리 진입 여부를 추정하기 위해 모션 센서를 사용합니다.
-        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: 현재 위치가 등록한 집 반경 안인지 확인하기 위해 위치를 사용합니다.
+        INFOPLIST_KEY_NSMotionUsageDescription: 잠자리 진입 데이터를 수집하기 위해 기기 자세와 움직임을 기록합니다.
+        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: 측정 중 위치와 집까지 거리를 기록하기 위해 위치를 사용합니다.
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait

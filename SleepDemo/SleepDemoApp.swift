@@ -10,7 +10,7 @@ struct SleepDemoApp: App {
 
     init() {
         do {
-            container = try ModelContainer(for: MeasurementSession.self, SampleBatch.self, ScorePoint.self, UserLabel.self)
+            container = try ModelContainer(for: MeasurementSession.self, SampleBatch.self, UserLabel.self, LocationRecord.self)
         } catch {
             fatalError("ModelContainer 생성 실패: \(error)")
         }

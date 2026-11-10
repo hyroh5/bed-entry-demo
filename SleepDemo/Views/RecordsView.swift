@@ -54,8 +54,6 @@ private struct SessionRow: View {
     let isActive: Bool
 
     var body: some View {
-        let labels = session.labels
-        let misses = labels.filter { $0.isMisclassified == true }.count
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(session.startedAt.formatted(date: .abbreviated, time: .shortened)).font(.headline)
@@ -63,9 +61,8 @@ private struct SessionRow: View {
             }
             HStack(spacing: 12) {
                 Text(durationText)
-                Text("응답 \(labels.count)")
-                Text("오분류 \(misses)").foregroundStyle(misses > 0 ? .red : .secondary)
-                Text("룰 \(session.ruleVersion)")
+                Text("상태 전환 \(session.labels.count)")
+                Text("위치 \(session.locations.count)")
             }
             .font(.caption).foregroundStyle(.secondary)
         }
@@ -84,44 +81,26 @@ struct SessionDetailView: View {
     @State private var exportError: String?
 
     var body: some View {
-        let scores = session.sortedScores
         let labels = session.sortedLabels
-        let judged = labels.compactMap(\.isMisclassified)
-        let misses = judged.filter { $0 }.count
 
         List {
             Section("세션 정보") {
                 LabeledContent("시작", value: session.startedAt.formatted(date: .abbreviated, time: .standard))
                 LabeledContent("종료", value: session.endedAt?.formatted(date: .abbreviated, time: .standard) ?? "측정 중")
-                LabeledContent("목표 취침 시간", value: ExportService.hhmm(session.targetBedtimeMinutes))
-                LabeledContent("위치 제한", value: session.locationGateEnabled ? "사용 (반경 \(Int(session.homeRadius))m)" : "해제")
-                LabeledContent("시작 시 위치 게이트", value: session.initialLocationGate)
                 LabeledContent("샘플링", value: "\(fmt(session.samplingHz)) Hz")
-                LabeledContent("룰 버전", value: session.ruleVersion)
                 LabeledContent("원시 샘플 수", value: "\(session.sampleCount)")
-                LabeledContent("판정 기록 수", value: "\(scores.count)")
-            }
-
-            Section("점수 변화") {
-                let points = SeriesBuilder.downsample(scores, max: 300)
-                SeriesChart(points: SeriesBuilder.series(points.map {
-                    ($0.timestamp, [("총점", $0.total), ("자세", $0.posture), ("움직임", $0.motion), ("취침시간", $0.bedtime)])
-                }), threshold: session.ruleConfig?.threshold, yDomain: 0...100, height: 200)
+                LabeledContent("위치 기록 수", value: "\(session.locations.count)")
             }
 
             Section {
                 if labels.isEmpty {
-                    Text("응답 없음").foregroundStyle(.secondary)
+                    Text("상태 전환 없음").foregroundStyle(.secondary)
                 }
                 ForEach(labels) { label in
                     LabelRow(label: label)
                 }
             } header: {
-                Text("사용자 응답 \(labels.count)건")
-            } footer: {
-                if !judged.isEmpty {
-                    Text("판정 가능 \(judged.count)건 중 오분류 \(misses)건 (정확도 \(fmt(Double(judged.count - misses) / Double(judged.count) * 100))%). BLOCKED·UNKNOWN 예측은 제외.")
-                }
+                Text("상태 전환 \(labels.count)건")
             }
 
             Section("내보내기") {
@@ -146,24 +125,10 @@ private struct LabelRow: View {
     let label: UserLabel
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack {
-                Text(label.timestamp.formatted(date: .omitted, time: .standard)).monospacedDigit()
-                Spacer()
-                switch label.isMisclassified {
-                case .some(true): Badge(text: "오분류", color: .red)
-                case .some(false): Badge(text: "일치", color: .green)
-                case .none: Badge(text: "판정 불가", color: .gray)
-                }
-            }
-            HStack(spacing: 10) {
-                Text("응답: \(label.inBed ? "예" : "아니요")").bold()
-                Text("예측: \(label.predictedState)")
-                Text("점수 \(fmt(label.total))")
-            }
-            .font(.caption)
-            Text("자세 \(fmt(label.posture)) · 움직임 \(fmt(label.motion)) · 취침 \(fmt(label.bedtime)) · 위치 \(label.locationGate)")
-                .font(.caption2).foregroundStyle(.secondary)
+        HStack {
+            Text(label.timestamp.formatted(date: .omitted, time: .standard)).monospacedDigit()
+            Spacer()
+            Text("→ \(label.inBed ? "침대 안" : "침대 밖")").bold()
         }
     }
 }

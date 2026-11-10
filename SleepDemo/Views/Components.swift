@@ -7,27 +7,6 @@ func fmt(_ v: Double?, _ digits: Int = 0) -> String {
     return String(format: "%.\(digits)f", v)
 }
 
-extension BedState {
-    var color: Color {
-        switch self {
-        case .blocked: .gray
-        case .unknown: .orange
-        case .notInBed: .blue
-        case .possiblyInBed: .indigo
-        }
-    }
-}
-
-extension GateStatus {
-    var color: Color {
-        switch self {
-        case .pass, .disabled: .green
-        case .blocked: .red
-        case .unknown: .orange
-        }
-    }
-}
-
 struct Badge: View {
     let text: String
     let color: Color
@@ -38,27 +17,6 @@ struct Badge: View {
             .padding(.horizontal, 8).padding(.vertical, 3)
             .background(color.opacity(0.15), in: Capsule())
             .foregroundStyle(color)
-    }
-}
-
-/// 숫자 입력 행. 소수 입력 후 키보드 '완료' 또는 다른 칸으로 이동하면 반영된다.
-struct NumberField: View {
-    let title: String
-    @Binding var value: Double
-    var unit: String = ""
-
-    var body: some View {
-        HStack {
-            Text(title)
-            Spacer()
-            TextField(title, value: $value, format: .number.precision(.fractionLength(0...6)))
-                .keyboardType(.decimalPad)
-                .multilineTextAlignment(.trailing)
-                .frame(maxWidth: 110)
-            if !unit.isEmpty {
-                Text(unit).foregroundStyle(.secondary).font(.footnote)
-            }
-        }
     }
 }
 
@@ -105,8 +63,6 @@ struct SeriesPoint: Identifiable {
 
 struct SeriesChart: View {
     let points: [SeriesPoint]
-    var threshold: Double?
-    var yDomain: ClosedRange<Double>?
     var height: CGFloat = 170
 
     var body: some View {
@@ -114,8 +70,6 @@ struct SeriesChart: View {
             Text("데이터 없음")
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, minHeight: height)
-        } else if let yDomain {
-            chart.chartYScale(domain: yDomain)
         } else {
             chart
         }
@@ -127,11 +81,6 @@ struct SeriesChart: View {
                 LineMark(x: .value("시간", p.t), y: .value("값", p.value), series: .value("항목", p.series))
                     .foregroundStyle(by: .value("항목", p.series))
                     .interpolationMethod(.linear)
-            }
-            if let threshold {
-                RuleMark(y: .value("임계값", threshold))
-                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3]))
-                    .foregroundStyle(.red)
             }
         }
         .chartXAxis {
@@ -156,23 +105,23 @@ enum SeriesBuilder {
         }
         return out
     }
+}
 
-    /// (시각, [(시리즈명, 값?)]) 목록을 차트 포인트로 변환. nil 값은 건너뛴다.
-    static func series(_ rows: [(Date, [(String, Double?)])]) -> [SeriesPoint] {
-        var out: [SeriesPoint] = []
-        var id = 0
-        for (t, values) in rows {
-            for (name, v) in values {
-                if let v { out.append(SeriesPoint(id: id, t: t, series: name, value: v)) }
-                id += 1
-            }
+/// 상태 슬라이드 (침대 밖 / 침대 안). 측정 중에만 바꿀 수 있다.
+struct UserStatePicker: View {
+    @Environment(MeasurementController.self) private var controller
+
+    var body: some View {
+        Picker("실제 상태", selection: binding) {
+            Text("침대 밖").tag(Bool?.some(false))
+            Text("침대 안").tag(Bool?.some(true))
         }
-        return out
+        .pickerStyle(.segmented)
+        .disabled(!controller.isMeasuring)
     }
 
-    static func downsample<T>(_ xs: [T], max: Int) -> [T] {
-        guard xs.count > max, max > 0 else { return xs }
-        let stride = (xs.count + max - 1) / max
-        return xs.enumerated().compactMap { $0.offset % stride == 0 ? $0.element : nil }
+    private var binding: Binding<Bool?> {
+        Binding(get: { controller.userInBed },
+                set: { if let v = $0 { controller.setUserState(inBed: v) } })
     }
 }

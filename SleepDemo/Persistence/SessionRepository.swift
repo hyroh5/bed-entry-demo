@@ -1,3 +1,4 @@
+import CoreLocation
 import Foundation
 import SwiftData
 
@@ -5,17 +6,8 @@ import SwiftData
 struct SessionRepository {
     let context: ModelContext
 
-    func createSession(settings: AppSettings, rules: RuleConfig, initialGate: GateStatus) -> MeasurementSession {
-        let session = MeasurementSession(
-            startedAt: Date(),
-            targetBedtimeMinutes: settings.targetBedtimeMinutes,
-            locationGateEnabled: settings.locationGateEnabled,
-            homeRadius: settings.homeRadius,
-            initialLocationGate: initialGate.rawValue,
-            samplingHz: settings.samplingHz,
-            ruleVersion: rules.version,
-            ruleConfigJSON: rules.json
-        )
+    func createSession(samplingHz: Double) -> MeasurementSession {
+        let session = MeasurementSession(startedAt: Date(), samplingHz: samplingHz)
         context.insert(session)
         save()
         return session
@@ -28,18 +20,16 @@ struct SessionRepository {
         batch.session = session
     }
 
-    func appendScore(_ a: Assessment, features: WindowFeatures?, battery: BatteryStatus,
-                     ruleVersion: String, to session: MeasurementSession) {
-        let point = ScorePoint(assessment: a, features: features, battery: battery, ruleVersion: ruleVersion)
-        context.insert(point)
-        point.session = session
+    func appendLocation(_ loc: CLLocation, distanceToHome: Double?, to session: MeasurementSession) {
+        let record = LocationRecord(timestamp: loc.timestamp, latitude: loc.coordinate.latitude,
+                                    longitude: loc.coordinate.longitude, horizontalAccuracy: loc.horizontalAccuracy,
+                                    distanceToHome: distanceToHome)
+        context.insert(record)
+        record.session = session
     }
 
-    func addLabel(inBed: Bool, at time: Date, assessment: Assessment?, features: WindowFeatures?,
-                  context samples: [MotionSample], contextSeconds: Double, ruleVersion: String,
-                  to session: MeasurementSession) {
-        let label = UserLabel(inBed: inBed, timestamp: time, assessment: assessment, features: features,
-                              context: samples, contextSeconds: contextSeconds, ruleVersion: ruleVersion)
+    func addLabel(inBed: Bool, at time: Date, to session: MeasurementSession) {
+        let label = UserLabel(inBed: inBed, timestamp: time)
         context.insert(label)
         label.session = session
         save()

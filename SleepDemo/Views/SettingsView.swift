@@ -11,14 +11,7 @@ struct SettingsView: View {
 
         NavigationStack {
             Form {
-                Section("목표 취침 시간") {
-                    DatePicker("목표 시각", selection: bedtimeBinding, displayedComponents: .hourAndMinute)
-                    Text("점수 적용 범위는 룰 설정에서 변경합니다.").font(.footnote).foregroundStyle(.secondary)
-                }
-
                 Section {
-                    Toggle("위치 제한 사용", isOn: $settings.app.locationGateEnabled)
-                    NumberField(title: "허용 반경", value: $settings.app.homeRadius, unit: "m")
                     HStack {
                         Text("위도")
                         TextField("미설정", value: $settings.app.homeLatitude, format: .number.precision(.fractionLength(0...7)))
@@ -32,7 +25,7 @@ struct SettingsView: View {
                 } header: {
                     Text("집 위치")
                 } footer: {
-                    Text("위치 제한을 끄면 집 밖(여행·외박)에서도 판정합니다. 집 밖에서는 BLOCKED, 권한·정확도 부족 시 UNKNOWN으로 처리합니다.")
+                    Text("측정 중 위치 좌표·정확도를 기록하고, 집이 설정돼 있으면 집까지 거리도 함께 남깁니다. 집 좌표 자체는 세션에 저장하지 않습니다.")
                 }
 
                 Section("현재 위치") {
@@ -62,25 +55,12 @@ struct SettingsView: View {
                 } header: {
                     Text("센서 측정 주기")
                 } footer: {
-                    Text("변경 내용은 다음 측정 세션부터 적용됩니다. UI는 4Hz, 판정·저장은 1Hz로 갱신됩니다.")
+                    Text("변경 내용은 다음 측정 세션부터 적용됩니다.")
                 }
             }
             .navigationTitle("설정")
             .keyboardDoneToolbar()
         }
-    }
-
-    private var bedtimeBinding: Binding<Date> {
-        Binding(
-            get: {
-                let m = settings.app.targetBedtimeMinutes
-                return Calendar.current.date(bySettingHour: m / 60, minute: m % 60, second: 0, of: Date()) ?? Date()
-            },
-            set: {
-                let c = Calendar.current.dateComponents([.hour, .minute], from: $0)
-                settings.app.targetBedtimeMinutes = (c.hour ?? 0) * 60 + (c.minute ?? 0)
-            }
-        )
     }
 
     private func authorizationText(_ status: CLAuthorizationStatus) -> String {
