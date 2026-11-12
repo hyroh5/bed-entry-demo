@@ -195,11 +195,9 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					04FA5155D45BE143C8709AEE = {
-						DevelopmentTeam = GFZ4D8P8HT;
 						ProvisioningStyle = Automatic;
 					};
 					7A08B8FA9933D77B239131E8 = {
-						DevelopmentTeam = GFZ4D8P8HT;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -315,7 +313,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = GFZ4D8P8HT;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -380,7 +377,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = GFZ4D8P8HT;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -412,7 +408,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.jeongdaegyun.sleepdemo.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hyroh5.sleepdemo.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SleepDemo.app/SleepDemo";
@@ -429,7 +425,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.jeongdaegyun.sleepdemo.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hyroh5.sleepdemo.tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SleepDemo.app/SleepDemo";
@@ -454,7 +450,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.jeongdaegyun.sleepdemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hyroh5.sleepdemo;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -478,7 +474,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.jeongdaegyun.sleepdemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hyroh5.sleepdemo;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

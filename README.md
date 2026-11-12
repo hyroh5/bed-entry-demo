@@ -12,7 +12,7 @@ xcodegen generate       # project.yml → SleepDemo.xcodeproj
 open SleepDemo.xcodeproj
 ```
 
-실제 iPhone에서 실행하려면 Xcode에서 SleepDemo 타깃의 **Signing & Capabilities → Team**을 지정하세요. 번들 ID(`com.jeongdaegyun.sleepdemo`)가 다른 앱과 겹치면 바꿔도 됩니다.
+실제 iPhone에서 실행하려면 Xcode에서 SleepDemo 타깃의 **Signing & Capabilities → Team**을 지정하세요. 번들 ID(`com.hyroh5.sleepdemo`)가 다른 앱과 겹치면 바꿔도 됩니다.
 
 테스트: `xcodebuild test -scheme SleepDemo -destination 'platform=iOS Simulator,name=iPhone 17'`
 
