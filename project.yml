@@ -14,7 +14,7 @@ targets:
     sources: [SleepDemo]
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.hyroh5.sleepdemo
+        PRODUCT_BUNDLE_IDENTIFIER: com.hyroh5.bedentrydemo
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: 잠자리 감지
         INFOPLIST_KEY_NSMotionUsageDescription: 잠자리 진입 데이터를 수집하기 위해 기기 자세와 움직임을 기록합니다.
@@ -37,4 +37,4 @@ targets:
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
-        PRODUCT_BUNDLE_IDENTIFIER: com.hyroh5.sleepdemo.tests
+        PRODUCT_BUNDLE_IDENTIFIER: com.hyroh5.bedentrydemo.tests
