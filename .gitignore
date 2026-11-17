@@ -3,3 +3,6 @@ DerivedData/
 xcuserdata/
 *.xcuserstate
 .DS_Store
+data/
+.venv/
+.ipynb_checkpoints/
